@@ -12,9 +12,9 @@ namespace IndicativeRateUSD
 {
     public partial class MainForm : Form
     {
-        string[] deals;
-        string[] usd;
-        string[] output;
+        string[] my_deals;
+        string[] usd_quotes;
+        string[] output_quotes;
 
         public MainForm()
         {
@@ -29,12 +29,12 @@ namespace IndicativeRateUSD
 
                 if (open_file.ShowDialog() == DialogResult.OK)
                 {
-                    deals = File.ReadAllLines(open_file.FileName);
+                    my_deals = File.ReadAllLines(open_file.FileName);
                     btnUSD.Enabled = true;
                 }
                 else { return; }
 
-                output = new string[deals.Length];                
+                output_quotes = new string[my_deals.Length];                
             }
         }
 
@@ -46,24 +46,29 @@ namespace IndicativeRateUSD
 
                 if (open_file.ShowDialog() == DialogResult.OK)
                 {
-                    string[] temp_mass = File.ReadAllLines(open_file.FileName);
+                    string[] input_quote = File.ReadAllLines(open_file.FileName);
 
-                    usd = new string[temp_mass.Length / 2];
+                    usd_quotes = new string[input_quote.Length / 2];
 
-                    int j = -1;
+                    const int CONST_DATE = 1;
+                    const int CONST_TIME = 2;
+                    const int CONST_QUOTE = 3;
+                    
                     string[] row_1;
                     string[] row_2;
-                    string temp_str;
+                    string temp_row;
 
-                    for (int i = temp_mass.Length - 1; i > 0; i = i - 2)
+                    for (int i = input_quote.Length - 1, j = 0; i > 0; i = i - 2, j++)
                     {
-                        row_1 = temp_mass[i].Split(new char[] { '\t', ' ' });
-                        row_2 = temp_mass[i - 1].Split(new char[] { '\t', ' ' });
+                        row_1 = input_quote[i].Split(new char[] { '\t', ' ' });
+                        row_2 = input_quote[i - 1].Split(new char[] { '\t', ' ' });
 
-                        if (row_1[1] == row_2[1] && row_1[3] != row_2[3])
+                        if (row_1[CONST_DATE] == row_2[CONST_DATE] && 
+                            row_1[CONST_TIME] != row_2[CONST_TIME])
                         {
-                            temp_str = string.Format("{0}\t{1}\t{2}", row_1[1], row_1[3], row_2[3]);
-                            j++;
+                            temp_row = string.Format("{0}\t{1}\t{2}", row_1[CONST_DATE], 
+                                                                        row_1[CONST_QUOTE], 
+                                                                        row_2[CONST_QUOTE]);                            
                         }
                         else
                         {
@@ -71,7 +76,7 @@ namespace IndicativeRateUSD
                             break;
                         }
 
-                        usd[j] = temp_str;
+                        usd_quotes[j] = temp_row;
                     }
 
                     btnResult.Enabled = true;
@@ -89,73 +94,74 @@ namespace IndicativeRateUSD
             const int CONST_QUOTE_2 = 2;
 
             DateTime date_deal;
-            DateTime date_usd;
+            DateTime date_quote;
             DateTime time_deal;
 
-            string[] temp_deal;
-            string[] temp_usd;
-            string temp_str = "";
+            string[] deal;
+            string[] quote;
+            string temp = "";           
 
-            bool flag;
-
-            for (int i = 0; i < deals.Length; i++)
+            for (int i = 0; i < my_deals.Length; i++)
             {
-                flag = true;
+                deal = my_deals[i].Split(new char[] { '\t' });
+                date_deal = DateTime.Parse(deal[CONST_DATE]);
+                time_deal = DateTime.Parse(deal[CONST_TIME], null, 
+                                            System.Globalization.DateTimeStyles.NoCurrentDateDefault);
 
-                temp_deal = deals[i].Split(new char[] { '\t' });
-                date_deal = DateTime.Parse(temp_deal[CONST_DATE]);
+                int j = 0;
 
-                for (int j = 0; j < usd.Length; j++)
+                //ПОИСК НЕОБХОДИМОЙ ДАТЫ В ИНДИКАТИВНЫХ КУРСАХ
+
+                while (true)
                 {
-                    if (flag)
+                    if (j < usd_quotes.Length)
                     {
-                        temp_usd = usd[j].Split(new char[] { '\t' });
-                        date_usd = DateTime.Parse(temp_usd[CONST_DATE]);
-
-                        if (date_deal == date_usd)
-                        {
-                            time_deal = DateTime.Parse(temp_deal[CONST_TIME], null, System.Globalization.DateTimeStyles.NoCurrentDateDefault);
-
-                            if (time_deal < new DateTime(1, 1, 1, 14, 0, 0))
-                            {
-                                if (j == 0)
-                                {
-                                    MessageBox.Show("Добавте более ранние данные об индикативных курсах.");
-                                    break;
-                                }
-                                else
-                                {
-                                    temp_usd = usd[j - 1].Split(new char[] { '\t' });
-                                    temp_str = string.Format("{0}\t{1}", temp_deal[CONST_DATE], temp_usd[CONST_QUOTE_2]);
-                                    flag = false;//прервать внутренний цикл
-
-                                }
-                            }
-                            else if (time_deal > new DateTime(1, 1, 1, 18, 45, 0))
-                            {
-                                temp_str = string.Format("{0}\t{1}", temp_deal[CONST_DATE], temp_usd[CONST_QUOTE_2]);
-                                flag = false;//прервать внутренний цикл
-                            }
-
-                            else
-                            {
-                                temp_str = string.Format("{0}\t{1}", temp_deal[CONST_DATE], temp_usd[CONST_QUOTE_1]);
-                                flag = false;//прервать внутренний цикл
-                            }
-
-                        }
-                        
+                        quote = usd_quotes[j].Split(new char[] { '\t' });
+                        date_quote = DateTime.Parse(quote[CONST_DATE]);
                     }
-                    
+                    else
+                    {
+                        MessageBox.Show(string.Format("Не найдены индикативные курсы для сделки № {0}." +
+                                                    "\nИли неправильный формат входных данных.", i + 1));
+                        btnUSD.Enabled = false;
+                        btnResult.Enabled = false;
+                        return;
+                    }
+
+                    if (date_deal != date_quote)
+                        j++;
+                    else
+                        break;
                 }
 
-                if (flag)//если во внутреннем цикле флаг так и остался true значит нужные данные не найдены
+                //ПОИСК НЕОХОДИМОГО ИНДИКАТИВНОГО КУРСА НА ВЫБРАННУЮ ДАТУ
+
+                if (time_deal < new DateTime(1, 1, 1, 14, 0, 0))
                 {
-                    MessageBox.Show("В файле нужные индикативные курсы не найдены. Добавьте данные.");
-                    return;
+                    if (j == 0)//т.к. необходимо обратиться к предыдущей дате, то возможно j-1=-1 
+                    {
+                        MessageBox.Show("Добавте более ранние данные об индикативных курсах.");
+                        break;
+                    }
+                    else
+                    {
+                        quote = usd_quotes[j - 1].Split(new char[] { '\t' });
+                        temp = string.Format("{0}\t{1}", deal[CONST_DATE], quote[CONST_QUOTE_2]);
+
+                    }
+                }
+                else if (time_deal > new DateTime(1, 1, 1, 18, 45, 0))
+                {
+                    temp = string.Format("{0}\t{1}", deal[CONST_DATE], quote[CONST_QUOTE_2]);
                 }
 
-                output[i] = temp_str;
+                else
+                {
+                    temp = string.Format("{0}\t{1}", deal[CONST_DATE], quote[CONST_QUOTE_1]);                    
+                }               
+
+                output_quotes[i] = temp;
+                  
             }
 
             using (SaveFileDialog save_file = new SaveFileDialog())
@@ -164,7 +170,7 @@ namespace IndicativeRateUSD
 
                 if (save_file.ShowDialog() == DialogResult.OK)
                 {
-                    File.WriteAllLines(save_file.FileName, output);
+                    File.WriteAllLines(save_file.FileName, output_quotes);
                     Close();
                 }
                 else { Close(); }

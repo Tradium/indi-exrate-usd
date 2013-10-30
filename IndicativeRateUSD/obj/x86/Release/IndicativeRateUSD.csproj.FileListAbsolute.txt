@@ -16,3 +16,12 @@ C:\Documents and Settings\123\мои документы\visual studio 2010\Proje
 C:\Documents and Settings\123\мои документы\visual studio 2010\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.exe
 C:\Documents and Settings\123\мои документы\visual studio 2010\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.pdb
 C:\Documents and Settings\123\мои документы\visual studio 2010\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.MainForm.resources
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.exe
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.pdb
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\bin\Release\IndicativeRateUSD.exe
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\bin\Release\IndicativeRateUSD.pdb
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.MainForm.resources
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.Properties.Resources.resources
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.csproj.GenerateResource.Cache
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\obj\x86\Release\IndicativeRateUSD.csprojResolveAssemblyReference.cache
+C:\Users\122\Documents\Visual Studio 2013\Projects\IndicativeRateUSD\IndicativeRateUSD\bin\Release\IndicativeRateUSD.exe.config
